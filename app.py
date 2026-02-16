@@ -86,6 +86,11 @@ def wholeseller_login():
 def shopkeeper_dashboard():
     return render_template('dashboard.html')
 
+@app.route('/category/<name>')
+def view_category(name):
+    return render_template(f'{name}.html')
+
+
 
 @app.route('/')
 def index():
