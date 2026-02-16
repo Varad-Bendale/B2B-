@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vegetables - Bazaar One</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='grocery.css') }}" />
+</head>
+<body>
+
+  <div class="dashboard">
+
+    <div class="sidebar">
+      <div class="logo-box">
+        <h2><a href="{{ url_for('static', filename='dashboard.html') }}">Dashboard</a></h2>
+      </div>
+
+    <ul class="menu">
+  <li class="active">
+    <a href="{{ url_for('view_category', name='grocery') }}">Grocery</a>
+  </li>
+  <li>
+    <a href="{{ url_for('view_category', name='beverages') }}">Beverages</a>
+  </li>
+  <li>
+    <a href="{{ url_for('view_category', name='dairy') }}">Dairy</a>
+  </li>
+  <li>
+    <a href="{{ url_for('view_category', name='vegetables') }}">Vegetables</a>
+  </li>
+  <li>
+    <a href="{{ url_for('view_category', name='snacks') }}">Snacks</a>
+  </li>
+  <li>
+    <a href="{{ url_for('view_category', name='cleaning') }}">Cleaning</a>
+  </li>
+</ul>
+    </div>
+
+    <div class="main-content">
+      <div class="topbar">
+        <div class="search-box">
+          🔍
+          <input type="text" placeholder="Search for products" />
+        </div>
+        <div class="top-icons">
+          <div class="profile"></div>
+        </div>
+      </div>
+
+      <div class="content-wrapper">
+        <div class="category-section">
+          <h2>Vegetables</h2>
+
+          <div class="category-grid">
+            <div class="category-card">
+              <img src="{{ url_for('static', filename='onion.jpg') }}" alt="Onion">
+              <h3>Onion (1kg)</h3>
+              <h4>Rs 40/-</h4>
+              <div class="action-area">
+                <button class="btn add-btn">Add Item</button>
+                <div class="quantity-box hidden">
+                  <button class="qty-btn minus">−</button>
+                  <span class="qty">1</span>
+                  <button class="qty-btn plus">+</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="category-card">
+              <img src="{{ url_for('static', filename='tomato.png') }}" alt="Tomato">
+              <h3> Tomato (500g)</h3>
+              <h4>Rs 20/-</h4>
+              <div class="action-area">
+                <button class="btn add-btn">Add Item</button>
+                <div class="quantity-box hidden">
+                  <button class="qty-btn minus">−</button>
+                  <span class="qty">1</span>
+                  <button class="qty-btn plus">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+// JS logic handles the UI interaction
+document.querySelectorAll(".category-card").forEach(card => {
+  const addBtn = card.querySelector(".add-btn");
+  const qtyBox = card.querySelector(".quantity-box");
+  const qtyDisplay = card.querySelector(".qty");
+  const plusBtn = card.querySelector(".plus");
+  const minusBtn = card.querySelector(".minus");
+
+  let quantity = 0;
+
+  addBtn.addEventListener("click", () => {
+    quantity = 1;
+    qtyDisplay.textContent = quantity;
+    addBtn.style.display = "none";
+    qtyBox.classList.remove("hidden");
+  });
+
+  plusBtn.addEventListener("click", () => {
+    quantity++;
+    qtyDisplay.textContent = quantity;
+  });
+
+  minusBtn.addEventListener("click", () => {
+    quantity--;
+    if (quantity <= 0) {
+      quantity = 0;
+      qtyBox.classList.add("hidden");
+      addBtn.style.display = "inline-block";
+    } else {
+      qtyDisplay.textContent = quantity;
+    }
+  });
+});
+</script>
+
+</body>
+</html>

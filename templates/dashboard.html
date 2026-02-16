@@ -4,18 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Shopkeeper Dashboard</title>
-  <link rel="stylesheet" href="dashboard.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
   <div class="dashboard">
-
     <div class="sidebar">
-
       <div class="logo-box">
-        <h2>Dashboard</h2>
+        <h2>Bazaar One</h2>
       </div>
-
       <ul class="menu">
         <li class="active">⊞ Products</li>
         <li>📦 Orders</li>
@@ -23,94 +21,72 @@
         <li>🛒 Cart</li>
         <li>⚙ Settings</li>
       </ul>
-
     </div>
 
-    
     <div class="main-content">
-
       
       <div class="topbar">
         <div class="search-box">
-          🔍
-          <input type="text" placeholder="Search for products" />
+          🔍 <input type="text" placeholder="Search for products" />
         </div>
-
         <div class="top-icons">
           <div class="profile"></div>
         </div>
       </div>
 
       <div class="content-wrapper">
-
         <div class="category-section">
-          <h2>Products</h2>
+          <h2>Product Categories</h2>
 
           <div class="category-grid">
+            
             <div class="category-card">
-            <img src="grocery.jpg" alt="Grocery">
-            <h3>Grocery</h3>
-            <div class="btn-row">
-              <button class="btn">View Items</button>
-              
+              <img src="{{ url_for('static', filename='grocery.jpg') }}" alt="Grocery">
+              <h3>Grocery</h3>
+                <div class="btn-row">
+                  <a href="{{ url_for('view_category', name='grocery') }}" class="btn">View Items</a>
+                </div>
             </div>
-          </div>
 
-          <div class="category-card">
-            <img src="beverages.png" alt="Beverages">
-            <h3>Beverages</h3>
-            <div class="btn-row">
-              <button class="btn">View Items</button>
-              
+            <div class="category-card">
+              <img src="{{ url_for('static', filename='beverages.png') }}" alt="Beverages">
+              <h3>Beverages</h3>
+                <div class="btn-row">
+                  <a href="{{ url_for('view_category', name='beverages') }}" class="btn">View Items</a>
+                </div>
             </div>
-          </div>
 
-          <div class="category-card">
-            <img src="dairy.png" alt="Dairy">
-            <h3>Dairy</h3>
-            <div class="btn-row">
-              <button class="btn">View Items</button>
-              
+            <div class="category-card">
+              <img src="{{ url_for('static', filename='dairy.png') }}" alt="Dairy">
+              <h3>Dairy</h3>
+              <div class="btn-row">
+                  <a href="{{ url_for('view_category', name='dairy') }}" class="btn">View Items</a>
+                </div>
             </div>
-          </div>
 
-          <div class="category-card">
-            <img src="vegetables.png" alt="Vegetables">
-            <h3>Vegetables</h3>
-            <div class="btn-row">
-              <button class="btn">View Items</button>
-              
+            <div class="category-card">
+              <img src="{{ url_for('static', filename='vegetables.png') }}" alt="Vegetables">
+              <h3>Vegetables</h3>
+                <div class="btn-row">
+                  <a href="{{ url_for('view_category', name='vegetables') }}" class="btn">View Items</a>
+                </div>
             </div>
-          </div>
 
-          <div class="category-card">
-            <img src="snacks.png" alt="Snacks">
-            <h3>Snacks</h3>
-            <div class="btn-row">
-              <button class="btn">View Items</button>
-              
+            <div class="category-card">
+              <img src="{{ url_for('static', filename='snacks.png') }}" alt="Snacks">
+              <h3>Snacks</h3>
+                <div class="btn-row">
+                  <a href="{{ url_for('view_category', name='snacks') }}" class="btn">View Items</a>
+                </div>
             </div>
-          </div>
 
-          <div class="category-card">
-            <img src="cleaning.png" alt="Cleaning">
-            <h3>Cleaning</h3>
-            <div class="btn-row">
-              <button class="btn">View Items</button>
-              
+            <div class="category-card">
+              <img src="{{ url_for('static', filename='cleaning.png') }}" alt="Cleaning">
+              <h3>Cleaning</h3>
+                <div class="btn-row">
+                  <a href="{{ url_for('view_category', name='cleaning') }}" class="btn">View Items</a>
+                </div>
             </div>
-          </div>
 
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-</body>
-
+          </div> </div> </div> </div> </div> </body>
 </html>
