@@ -16,7 +16,7 @@
       </div>
 
       <ul class="menu">
-  <li class="active">
+  <li >
     <a href="{{ url_for('view_category', name='grocery') }}">Grocery</a>
   </li>
   <li>
@@ -31,7 +31,7 @@
   <li>
     <a href="{{ url_for('view_category', name='snacks') }}">Snacks</a>
   </li>
-  <li>
+  <li class="active">
     <a href="{{ url_for('view_category', name='cleaning') }}">Cleaning</a>
   </li>
 </ul>
@@ -123,4 +123,5 @@ document.querySelectorAll(".category-card").forEach(card => {
 </script>
 
 </body>
+
 </html>
