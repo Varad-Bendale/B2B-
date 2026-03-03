@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shopkeeper Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css" />
+</head>
+
+<body>
+  <div class="dashboard">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="logo-box">
+        <h2><a href="dashboard.html">Dashboard</a></h2>
+      </div>
+
+      <ul class="menu">
+        <li><a href="products.html" target="content-frame" style="font-size:18px;">⊞ Products</a></li>
+        <li><a href="orders.html" target="content-frame" style="font-size:18px;">📦 Orders</a></li>
+        <li><a href="chat.html" target="content-frame" style="font-size:18px;">💬 Chat</a></li>
+        <li><a href="cart.html" target="content-frame" style="font-size:18px;">🛒 Cart</a></li>
+        <li><a href="settings.html" target="content-frame">⚙ Settings</a></li>
+      </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+
+      <div class="topbar">
+
+        <div class="search-box">
+          🔍
+          <input type="text" placeholder="Search for products" />
+        </div>
+
+        <div class="profile" onclick="openProfile()"></div>
+      </div>
+
+      <div class="content-wrapper">
+        <iframe
+          id="mainFrame"
+          name="content-frame"
+          src="products.html">
+        </iframe>
+      </div>
+
+    </div>
+  </div>
+
+<script>
+  const iframe = document.getElementById("mainFrame");
+
+  iframe.addEventListener("load", function () {
+    iframe.classList.add("loaded");
+  });
+
+  function openProfile() {
+    iframe.classList.remove("loaded");
+    iframe.src = "profile.html";
+  }
+
+  window.onload = function () {
+    const user = JSON.parse(localStorage.getItem("grocifyUser"));
+    if (user) {
+      const circle = document.querySelector(".profile");
+      if (circle) {
+        circle.innerText = user.name.charAt(0).toUpperCase();
+      }
+    }
+  };
+</script>
+</body>
+</html>

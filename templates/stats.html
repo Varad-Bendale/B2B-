@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="wholesaler.css">
+</head>
+<body style="background:transparent; padding:20px;">
+<div class="dashboard-container">
+
+  <!-- Stats Cards -->
+  <div class="stats-section">
+
+    <div class="stat-card">
+      <div class="stat-icon">📥</div>
+      <div>
+        <h3 id="incomingCount">0</h3>
+        <p>Incoming Orders</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">⏳</div>
+      <div>
+        <h3 id="pendingCount">0</h3>
+        <p>Pending Orders</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div>
+        <h3 id="completedCount">0</h3>
+        <p>Completed Orders</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">💰</div>
+      <div>
+        <h3 id="totalRevenue">₹ 0</h3>
+        <p>Total Revenue</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Middle Section -->
+  <div class="middle-section">
+
+    <!-- Orders Chart -->
+    <div class="chart-box">
+      <h3>Orders This Week</h3>
+      <canvas id="ordersChart"></canvas>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="recent-box">
+      <h3>Recent Orders</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Shop</th>
+            <th>Status</th>
+            <th>₹</th>
+          </tr>
+        </thead>
+        <tbody id="recentOrdersTable"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- Bottom Section -->
+  <div class="bottom-section">
+
+    <!-- Revenue Summary -->
+    <div class="summary-box">
+      <h3>Revenue Summary</h3>
+      <p>This Month: <strong id="thisMonth">₹ 0</strong></p>
+      <p>Last Month: <strong id="lastMonth">₹ 0</strong></p>
+      <p>Growth: <strong id="growthPercent">0%</strong></p>
+    </div>
+
+    <!-- Notifications -->
+    <div class="notification-box">
+      <h3>Notifications</h3>
+      <ul id="notificationsList"></ul>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+
+// Demo Data (Replace later with real orders)
+const incoming = 12;
+const pending = 8;
+const completed = 45;
+const revenue = 124500;
+
+document.getElementById("incomingCount").innerText = incoming;
+document.getElementById("pendingCount").innerText = pending;
+document.getElementById("completedCount").innerText = completed;
+document.getElementById("totalRevenue").innerText = "₹ " + revenue.toLocaleString();
+
+// // Chart
+// const ctx = document.getElementById("ordersChart").getContext("2d");
+
+// new Chart(ctx, {
+//   type: "bar",
+//   data: {
+//     labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+//     datasets: [{
+//       label: "Orders",
+//       data: [5, 8, 6, 10, 12, 7, 9],
+//       backgroundColor: "#3b82f6"
+//     }]
+//   },
+//   options: {
+//     responsive: true,
+//     plugins: {
+//       legend: { display: false }
+//     }
+//   }
+// });
+
+// // Recent Orders
+// const recentOrders = [
+//   {id:"#1023", shop:"Om Kirana", status:"Pending", amount:4500},
+//   {id:"#1022", shop:"Shree Traders", status:"Completed", amount:8200},
+//   {id:"#1021", shop:"Ganesh Mart", status:"Incoming", amount:2750}
+// ];
+
+// const table = document.getElementById("recentOrdersTable");
+
+// recentOrders.forEach(order=>{
+//   table.innerHTML += `
+//     <tr>
+//       <td>${order.id}</td>
+//       <td>${order.shop}</td>
+//       <td>${order.status}</td>
+//       <td>₹ ${order.amount}</td>
+//     </tr>
+//   `;
+// });
+
+// // Revenue Summary
+// document.getElementById("thisMonth").innerText = "₹ 45,000";
+// document.getElementById("lastMonth").innerText = "₹ 38,000";
+// document.getElementById("growthPercent").innerText = "18%";
+
+// // Notifications
+// const notifications = [
+//   "3 new incoming orders",
+//   "2 payments received",
+//   "1 order delayed"
+// ];
+
+// const list = document.getElementById("notificationsList");
+// notifications.forEach(n=>{
+//   list.innerHTML += `<li>${n}</li>`;
+// });
+
+</script>
+
+</body>
+</html>

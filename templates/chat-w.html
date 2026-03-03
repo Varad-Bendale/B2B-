@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Professional Chat</title>
+    <link rel="stylesheet" href="chat.css">
+</head>
+<body>
+
+<div class="chat-wrapper">
+
+    <!-- LEFT SIDE -->
+    <div class="chat-sidebar">
+
+        <div class="search-box">
+            <input type="text" placeholder="Search shopkeeper...">
+        </div>
+
+        <div class="chat-list">
+
+            <div class="chat-item active" onclick="openChat('Om SuperMart')">
+                <div class="chat-details">
+                    <h4>Om SuperMart</h4>
+                    <p>Need delivery by tomorrow</p>
+                </div>
+                <div class="chat-meta">
+                    <span>10:45 AM</span>
+                    <span class="badge">2</span>
+                </div>
+            </div>
+
+            <div class="chat-item" onclick="openChat('City Grocery')">
+                <div class="chat-details">
+                    <h4>City Grocery</h4>
+                    <p>Invoice received</p>
+                </div>
+                <div class="chat-meta">
+                    <span>Yesterday</span>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="chat-main">
+
+        <div class="chat-header">
+            <h3 id="chatTitle">SuperMart</h3>
+            <span class="status">Active Now</span>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+            <div class="message received">
+                Sir, can we get delivery by tomorrow?
+                <span>10:40 AM</span>
+            </div>
+
+            <div class="message sent">
+                Yes, dispatching today evening.
+                <span>10:42 AM</span>
+            </div>
+        </div>
+
+        <div class="chat-input">
+            <input type="text" id="msgInput" placeholder="Type message...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+function openChat(name, element = null) {
+    document.getElementById("chatTitle").innerText = name;
+
+    document.querySelectorAll(".chat-item").forEach(item => {
+        item.classList.remove("active");
+    });
+
+    if (element) {
+        element.classList.add("active");
+    }
+
+    document.getElementById("chatMessages").innerHTML = `
+        <div class="message received">
+            Hello from ${name}
+            <span>Just now</span>
+        </div>
+    `;
+}
+
+function sendMessage() {
+    let input = document.getElementById("msgInput");
+    let messageText = input.value.trim();
+    if (messageText === "") return;
+
+    let msgBox = document.createElement("div");
+    msgBox.classList.add("message", "sent");
+    msgBox.innerHTML = messageText + "<span>Now</span>";
+
+    document.getElementById("chatMessages").appendChild(msgBox);
+    input.value = "";
+}
+
+
+// 🔥 ENTER KEY LISTENER
+document.addEventListener("DOMContentLoaded", function () {
+
+    const input = document.getElementById("msgInput");
+    const sendBtn = document.querySelector(".chat-input button");
+
+    // Send when button clicked
+    sendBtn.addEventListener("click", sendMessage);
+
+    // Send when Enter pressed
+    input.addEventListener("keypress", function (event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            sendMessage();
+        }
+    });
+
+});
+
+
+// 🔥 STORE REDIRECT PART
+window.onload = function () {
+    const params = new URLSearchParams(window.location.search);
+    const storeName = params.get("store");
+
+    if (!storeName) return;
+
+    const chatList = document.querySelector(".chat-list");
+    let existingChat = null;
+
+    document.querySelectorAll(".chat-item").forEach(item => {
+        const name = item.querySelector("h4").innerText;
+        if (name === storeName) {
+            existingChat = item;
+        }
+    });
+
+    if (existingChat) {
+        openChat(storeName, existingChat);
+    } else {
+        const newChat = document.createElement("div");
+        newChat.classList.add("chat-item", "active");
+        newChat.innerHTML = `
+            <div class="chat-details">
+                <h4>${storeName}</h4>
+                <p>New conversation</p>
+            </div>
+            <div class="chat-meta">
+                <span>Now</span>
+            </div>
+        `;
+
+        newChat.addEventListener("click", function () {
+            openChat(storeName, newChat);
+        });
+
+        chatList.prepend(newChat);
+
+        openChat(storeName, newChat);
+    }
+};
+
+</script>
+</body>
+</html>
