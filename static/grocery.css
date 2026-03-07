@@ -6,18 +6,150 @@
 }
 
 body {
-  padding: 25px;
+  background: #f4f7ff;
+  height: 100vh;
+  overflow: hidden;   /* prevents body scroll */
 }
 
-/* Category Title */
+/* Main Dashboard Container */
+.dashboard {
+  width: 95%;
+  height: 95vh;
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  display: flex;
+  margin: auto;
+  margin-top: 15px;
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Sidebar */
+.sidebar {
+  width: 220px;
+  background: #f8fbff;
+  border-right: 1px solid #e5ecff;
+  padding: 20px;
+  flex-shrink: 0;
+}
+
+/* Logo */
+.logo-box {
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+  color: white;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+/* Menu */
+.menu {
+  list-style: none;
+}
+
+.menu li {
+  padding: 12px 10px;
+  margin-bottom: 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 15px;
+  color: #333;
+  transition: 0.3s;
+}
+
+.menu li:hover {
+  background: #eaf1ff;
+}
+
+.menu li.active {
+  background: #dbeafe;
+  color: #2563eb;
+  font-weight: 600;
+}
+
+/* Main Content */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+/* Topbar */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* Scrollable Area */
+.content-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+/* Custom Scrollbar */
+.content-wrapper::-webkit-scrollbar {
+  width: 6px;
+}
+.content-wrapper::-webkit-scrollbar-thumb {
+  background: #c7d2fe;
+  border-radius: 10px;
+}
+
+/* Search */
+.search-box {
+  display: flex;
+  align-items: center;
+  background: #f1f5ff;
+  padding: 10px 15px;
+  border-radius: 10px;
+  width: 450px;
+}
+
+.search-box input {
+  border: none;
+  outline: none;
+  background: transparent;
+  margin-left: 10px;
+  width: 100%;
+}
+
+/* Top Icons */
+.top-icons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.toggle-btn {
+  border: none;
+  background: #f1f5ff;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.profile {
+  width: 40px;
+  height: 40px;
+  background: #3b82f6;
+  border-radius: 50%;
+}
+
+/* Category Section */
 .category-section h2 {
   font-size: 22px;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   color: #1f2937;
 }
 
-/* Grid Layout */
+/* AUTO RESPONSIVE GRID (IMPORTANT FIX) */
 .category-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -48,13 +180,7 @@ body {
 
 .category-card h3 {
   font-size: 16px;
-  margin-bottom: 5px;
-  color: #111827;
-}
-
-.category-card h4 {
-  font-size: 14px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   color: #111827;
 }
 
@@ -73,7 +199,6 @@ body {
 .btn:hover {
   background: #1d4ed8;
 }
-
 /* Action Area */
 .action-area {
   margin-top: 10px;
@@ -107,50 +232,22 @@ body {
   font-size: 14px;
 }
 
-/* Hidden Utility */
 .hidden {
   display: none;
 }
-
-/* Breadcrumb */
-.breadcrumb {
-  font-size: 20px;
-  margin-bottom: 10px;
-  font-weight: 600;
-}
-
-.breadcrumb a {
+.menu li a {
   text-decoration: none;
-  color: #111827;
+  color: inherit;
+  display: block;
+  width: 100%;
 }
 
-.breadcrumb span {
-  margin: 0 6px;
+.menu li a:hover {
+  color: #2d6cdf; /* optional hover color */
 }
 
-.breadcrumb .current {
-  color: #111827;
-  font-weight: 500;
+.logo-box h2 a {
+  text-decoration: none;
+  color: inherit;
+  display: block;
 }
-
-.category-card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.category-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 15px 35px rgba(0,0,0,0.12);
-}
-
-/* Button micro interaction */
-.btn {
-  position: relative;
-  overflow: hidden;
-  transition: all 0.25s ease;
-}
-
-.btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(37,99,235,0.35);
-}
-
