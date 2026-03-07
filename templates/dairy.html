@@ -1,136 +1,114 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Grocery - Bazaar One</title>
-    <link rel="stylesheet" href="grocery.css" />
-  </head>
-  <body>
-    <div class="dashboard">
-      <!-- Main Content -->
-      <div class="main-content">
-        <div class="content-wrapper">
-          <div class="category-section">
-            <div class="breadcrumb">
-              <h2>
-                <a href="products.html">Products</a>
-                <span> → </span>
-                <a href="dairy.html">Dairy</a>
-              </h2>
-            </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dairy - Bazaar One</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='grocery.css') }}" />
+</head>
+<body>
 
-           <div class="category-grid">
+  <div class="dashboard">
 
-            <!-- Product 1 -->
+    <div class="sidebar">
+      <div class="logo-box">
+        <h2><a href="{{ url_for('shopkeeper_dashboard') }}">Dashboard</a></h2>
+      </div>
+      <ul class="menu">
+        <li><a href="{{ url_for('category', name='grocery') }}">Grocery</a></li>
+        <li><a href="{{ url_for('category', name='beverages') }}">Beverages</a></li>
+        <li class="active"><a href="{{ url_for('category', name='dairy') }}">Dairy</a></li>
+        <li><a href="{{ url_for('category', name='vegetables') }}">Vegetables</a></li>
+        <li><a href="{{ url_for('category', name='snacks') }}">Snacks</a></li>
+        <li><a href="{{ url_for('category', name='cleaning') }}">Cleaning</a></li>
+      </ul>
+    </div>
+
+    <div class="main-content">
+      <div class="topbar">
+        <div class="search-box">
+          🔍 <input type="text" placeholder="Search for products" />
+        </div>
+        <div class="top-icons">
+          <a href="{{ url_for('view_cart') }}">🛒 <span>{{ cart_count }}</span></a>
+          <div class="profile"></div>
+        </div>
+      </div>
+
+      <div class="content-wrapper">
+        <div class="category-section">
+          <h2>Dairy</h2>
+          <div class="category-grid">
+
             <div class="category-card">
-              <img src="milk.png" alt="Milk">
-              <h3>Amul Milk(500 ml)</h3>
+              <img src="{{ url_for('static', filename='milk.png') }}" alt="Milk">
+              <h3>Amul Milk (500ml)</h3>
               <h4>Rs 50/-</h4>
-
               <div class="action-area">
-                <button class="btn add-btn">Add Item</button>
-
-                <div class="quantity-box hidden">
-                  <button class="qty-btn minus">−</button>
-                  <span class="qty">1</span>
-                  <button class="qty-btn plus">+</button>
-                </div>
+                {% if 'milk' in cart %}
+                  <form action="{{ url_for('update') }}" method="POST" style="display:inline">
+                    <input type="hidden" name="item_id" value="milk">
+                    <input type="hidden" name="action" value="decrease">
+                    <input type="hidden" name="category" value="dairy">
+                    <button type="submit" class="qty-btn">−</button>
+                  </form>
+                  <span class="qty">{{ cart['milk']['qty'] }}</span>
+                  <form action="{{ url_for('update') }}" method="POST" style="display:inline">
+                    <input type="hidden" name="item_id" value="milk">
+                    <input type="hidden" name="action" value="increase">
+                    <input type="hidden" name="category" value="dairy">
+                    <button type="submit" class="qty-btn">+</button>
+                  </form>
+                {% else %}
+                  <form action="{{ url_for('add') }}" method="POST">
+                    <input type="hidden" name="item_id" value="milk">
+                    <input type="hidden" name="name" value="Amul Milk (500ml)">
+                    <input type="hidden" name="price" value="50">
+                    <input type="hidden" name="image" value="milk.png">
+                    <input type="hidden" name="category" value="dairy">
+                    <button type="submit" class="btn add-btn">Add Item</button>
+                  </form>
+                {% endif %}
               </div>
             </div>
 
-            <!-- Product 2 -->
             <div class="category-card">
-              <img src="paneer.png" alt="Paneer">
-              <h3> Paneer (500g)</h3>
+              <img src="{{ url_for('static', filename='paneer.png') }}" alt="Paneer">
+              <h3>Paneer (500g)</h3>
               <h4>Rs 100/-</h4>
-
               <div class="action-area">
-                <button class="btn add-btn">Add Item</button>
-
-                <div class="quantity-box hidden">
-                  <button class="qty-btn minus">−</button>
-                  <span class="qty">1</span>
-                  <button class="qty-btn plus">+</button>
-                </div>
+                {% if 'paneer' in cart %}
+                  <form action="{{ url_for('update') }}" method="POST" style="display:inline">
+                    <input type="hidden" name="item_id" value="paneer">
+                    <input type="hidden" name="action" value="decrease">
+                    <input type="hidden" name="category" value="dairy">
+                    <button type="submit" class="qty-btn">−</button>
+                  </form>
+                  <span class="qty">{{ cart['paneer']['qty'] }}</span>
+                  <form action="{{ url_for('update') }}" method="POST" style="display:inline">
+                    <input type="hidden" name="item_id" value="paneer">
+                    <input type="hidden" name="action" value="increase">
+                    <input type="hidden" name="category" value="dairy">
+                    <button type="submit" class="qty-btn">+</button>
+                  </form>
+                {% else %}
+                  <form action="{{ url_for('add') }}" method="POST">
+                    <input type="hidden" name="item_id" value="paneer">
+                    <input type="hidden" name="name" value="Paneer (500g)">
+                    <input type="hidden" name="price" value="100">
+                    <input type="hidden" name="image" value="paneer.png">
+                    <input type="hidden" name="category" value="dairy">
+                    <button type="submit" class="btn add-btn">Add Item</button>
+                  </form>
+                {% endif %}
               </div>
             </div>
 
-
-          </div>
-
-
-          </div>
-            </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <script>
-  document.querySelectorAll(".category-card").forEach((card) => {
-    const addBtn = card.querySelector(".add-btn");
-    const qtyBox = card.querySelector(".quantity-box");
-    const qtyDisplay = card.querySelector(".qty");
-    const plusBtn = card.querySelector(".plus");
-    const minusBtn = card.querySelector(".minus");
-
-    let quantity = 0;
-
-    // Make quantity editable when clicked
-    qtyDisplay.addEventListener("click", () => {
-      const input = document.createElement("input");
-      input.type = "number";
-      input.min = "1";
-      input.value = quantity;
-      input.style.width = "40px";
-
-      qtyDisplay.replaceWith(input);
-      input.focus();
-
-      // When user finishes typing
-      input.addEventListener("blur", () => {
-        let newQty = parseInt(input.value);
-
-        if (isNaN(newQty) || newQty <= 0) {
-          quantity = 0;
-          qtyBox.classList.add("hidden");
-          addBtn.style.display = "inline-block";
-        } else {
-          quantity = newQty;
-          qtyDisplay.textContent = quantity;
-          input.replaceWith(qtyDisplay);
-        }
-      });
-    });
-
-    // When Add Item clicked
-    addBtn.addEventListener("click", () => {
-      quantity = 1;
-      qtyDisplay.textContent = quantity;
-      addBtn.style.display = "none";
-      qtyBox.classList.remove("hidden");
-    });
-
-    // When + clicked
-    plusBtn.addEventListener("click", () => {
-      quantity++;
-      qtyDisplay.textContent = quantity;
-    });
-
-    // When - clicked
-    minusBtn.addEventListener("click", () => {
-      quantity--;
-
-      if (quantity <= 0) {
-        quantity = 0;
-        qtyBox.classList.add("hidden");
-        addBtn.style.display = "inline-block";
-      } else {
-        qtyDisplay.textContent = quantity;
-      }
-    });
-  });
-</script>
-  </body>
+</body>
 </html>
