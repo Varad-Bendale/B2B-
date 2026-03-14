@@ -1,0 +1,128 @@
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:"Segoe UI", sans-serif;
+}
+body{
+  background:#f4f7ff;
+  min-height:100vh;
+}
+.dashboard{
+  width:95%;
+  min-height:95vh;
+  margin:auto;
+  margin-top:15px;
+  background:white;
+  display:flex;
+  border-radius:15px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.1);
+}
+.dashboard a{ text-decoration:none; }
+.sidebar{
+  width:220px;
+  background:#f8fbff;
+  padding:15px;
+  border-right:1px solid #e5ecff;
+}
+.logo-box{
+  background:linear-gradient(90deg,#3b82f6,#2563eb);
+  padding:15px;
+  border-radius:10px;
+  text-align:center;
+  color:white;
+  margin-bottom:20px;
+}
+.logo-box h2{ color:white; }
+.menu{ list-style:none; }
+.menu li{ margin-bottom:8px; }
+.menu li a{
+  display:block;
+  padding:12px;
+  border-radius:10px;
+  color:#333;
+  font-size:14px;
+}
+.menu li a:hover{ background:#eaf1ff; color:#2563eb; }
+.main-content{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  padding:20px;
+}
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:13px;
+  margin-bottom:25px;
+}
+.search-box{
+  display:flex;
+  align-items:center;
+  background:#f1f5ff;
+  padding:10px 15px;
+  border-radius:10px;
+  width:550px;
+}
+.search-box input{
+  border:none;
+  outline:none;
+  background:transparent;
+  margin-left:10px;
+  width:100%;
+}
+.content-wrapper{ flex:1; }
+.content-wrapper h2{
+  font-size:22px;
+  color:#1e293b;
+  margin-bottom:20px;
+}
+.btn-back{
+  display:inline-block;
+  background:#f1f5ff;
+  color:#2563eb;
+  padding:8px 16px;
+  border-radius:8px;
+  font-size:13px;
+  font-weight:500;
+  margin-bottom:20px;
+  transition:0.2s;
+}
+.btn-back:hover{ background:#2563eb; color:white; }
+.orders-table{
+  width:100%;
+  border-collapse:collapse;
+  background:white;
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 5px 20px rgba(0,0,0,0.05);
+  border:1px solid #e5ecff;
+}
+.orders-table th{
+  background:#f1f5ff;
+  padding:12px 15px;
+  text-align:left;
+  font-size:13px;
+  color:#2563eb;
+  font-weight:600;
+  border-bottom:1px solid #e5ecff;
+}
+.orders-table td{
+  padding:12px 15px;
+  font-size:14px;
+  color:#333;
+  border-bottom:1px solid #f1f5ff;
+}
+.orders-table tr:last-child td{ border-bottom:none; }
+.orders-table tr:hover td{ background:#f8fbff; }
+.badge{
+  display:inline-block;
+  padding:4px 10px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:600;
+  text-transform:capitalize;
+}
+.badge.completed{ background:#dcfce7; color:#16a34a; }
+.badge.incoming{ background:#fef9c3; color:#ca8a04; }

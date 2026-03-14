@@ -1,0 +1,146 @@
+body{
+  padding:20px;
+  font-family:"Segoe UI", sans-serif;
+  background:transparent;
+}
+
+.page-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
+
+.page-header h2{
+  font-size:22px;
+}
+
+.filter-btn{
+  background:#2563eb;
+  color:white;
+  border:none;
+  padding:8px 14px;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+.table-container{
+  background:#f8fbff;
+  border-radius:15px;
+  padding:15px;
+  border:1px solid #e6efff;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+thead{
+  background:#eef3ff;
+}
+
+th{
+  text-align:left;
+  padding:12px;
+  font-size:14px;
+}
+
+td{
+  padding:14px 12px;
+  font-size:14px;
+  border-bottom:1px solid #e6efff;
+}
+
+tbody tr:hover{
+  background:#f1f5ff;
+}
+
+.status{
+  padding:5px 12px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:500;
+}
+
+.completed{
+  background:#d1fae5;
+  color:#059669;
+}
+
+.pending{
+  background:#fef3c7;
+  color:#d97706;
+}
+
+.view-btn{
+  background:#3b82f6;
+  color:white;
+  border:none;
+  padding:6px 12px;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.view-btn:hover{
+  background:#1d4ed8;
+}
+
+.pagination{
+  margin-top:20px;
+  display:flex;
+  justify-content:center;
+  gap:10px;
+}
+
+.page-btn{
+  padding:6px 10px;
+  border-radius:6px;
+  border:1px solid #dbeafe;
+  background:white;
+  cursor:pointer;
+}
+
+.page-btn.active{
+  background:#2563eb;
+  color:white;
+  border:none;
+}
+
+/* Table row smooth hover */
+tbody tr {
+  transition: all 0.2s ease;
+}
+
+tbody tr:hover {
+  transform: scale(1.01);
+}
+
+/* Status badge smooth look */
+.status {
+  transition: all 0.2s ease;
+}
+
+.status:hover {
+  transform: scale(1.05);
+}
+
+/* View button animation */
+.view-btn {
+  transition: all 0.25s ease;
+}
+
+.view-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(59,130,246,0.3);
+}
+
+/* Pagination smooth */
+.page-btn {
+  transition: all 0.2s ease;
+}
+
+.page-btn:hover {
+  background: #eaf1ff;
+  transform: translateY(-2px);
+}
