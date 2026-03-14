@@ -1,0 +1,5 @@
+id,name,price,image,qty,shopkeeper_name,date
+atta,Atta (1kg),120,atta.jpg,5,Varad Bendale,2026-03-14
+dal,Dal,100,dal.jpg,4,Varad Bendale,2026-03-14
+onion,Onion (1kg),40,onion.jpg,4,Varad Bendale,2026-03-14
+tomato,Tomato (500g),20,tomato.png,5,Varad Bendale,2026-03-14
