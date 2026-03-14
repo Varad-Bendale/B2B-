@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cleaning - Bazaar One</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='grocery.css') }}" />
+</head>
+<body>
+
+  <div class="dashboard">
+
+    <div class="sidebar">
+      <div class="logo-box">
+        <h2><a href="{{ url_for('shopkeeper_dashboard') }}">Dashboard</a></h2>
+      </div>
+      <ul class="menu">
+        <li><a href="{{ url_for('category', name='grocery') }}">Grocery</a></li>
+        <li><a href="{{ url_for('category', name='beverages') }}">Beverages</a></li>
+        <li><a href="{{ url_for('category', name='dairy') }}">Dairy</a></li>
+        <li><a href="{{ url_for('category', name='vegetables') }}">Vegetables</a></li>
+        <li><a href="{{ url_for('category', name='snacks') }}">Snacks</a></li>
+        <li class="active"><a href="{{ url_for('category', name='cleaning') }}">Cleaning</a></li>
+      </ul>
+    </div>
+
+    <div class="main-content">
+      <div class="topbar">
+        <div class="search-box">
+          🔍 <input type="text" placeholder="Search for products" />
+        </div>
+        <div class="top-icons">
+          <a href="{{ url_for('view_cart') }}">🛒 <span>{{ cart_count }}</span></a>
+          <div class="profile"></div>
+        </div>
+      </div>
+
+      <div class="content-wrapper">
+        <div class="category-section">
+          <h2>Cleaning</h2>
+          <div class="category-grid">
+
+            <div class="category-card">
+              <img src="{{ url_for('static', filename='lizol.png') }}" alt="Lizol">
+              <h3>Lizol (1L)</h3>
+              <h4>Rs 70/-</h4>
+              <div class="action-area">
+                {% if 'lizol' in cart %}
+                  <form action="{{ url_for('update') }}" method="POST" style="display:inline">
+                    <input type="hidden" name="item_id" value="lizol">
+                    <input type="hidden" name="action" value="decrease">
+                    <input type="hidden" name="category" value="cleaning">
+                    <button type="submit" class="qty-btn">−</button>
+                  </form>
+                  <span class="qty">{{ cart['lizol']['qty'] }}</span>
+                  <form action="{{ url_for('update') }}" method="POST" style="display:inline">
+                    <input type="hidden" name="item_id" value="lizol">
+                    <input type="hidden" name="action" value="increase">
+                    <input type="hidden" name="category" value="cleaning">
+                    <button type="submit" class="qty-btn">+</button>
+                  </form>
+                {% else %}
+                  <form action="{{ url_for('add') }}" method="POST">
+                    <input type="hidden" name="item_id" value="lizol">
+                    <input type="hidden" name="name" value="Lizol (1L)">
+                    <input type="hidden" name="price" value="70">
+                    <input type="hidden" name="image" value="lizol.png">
+                    <input type="hidden" name="category" value="cleaning">
+                    <button type="submit" class="btn add-btn">Add Item</button>
+                  </form>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="category-card">
+              <img src="{{ url_for('static', filename='harpic.png') }}" alt="Harpic">
+              <h3>Harpic (1L)</h3>
+              <h4>Rs 90/-</h4>
+              <div class="action-area">
+                {% if 'harpic' in cart %}
+                  <form action="{{ url_for('update') }}" method="POST" style="display:inline">
+                    <input type="hidden" name="item_id" value="harpic">
+                    <input type="hidden" name="action" value="decrease">
+                    <input type="hidden" name="category" value="cleaning">
+                    <button type="submit" class="qty-btn">−</button>
+                  </form>
+                  <span class="qty">{{ cart['harpic']['qty'] }}</span>
+                  <form action="{{ url_for('update') }}" method="POST" style="display:inline">
+                    <input type="hidden" name="item_id" value="harpic">
+                    <input type="hidden" name="action" value="increase">
+                    <input type="hidden" name="category" value="cleaning">
+                    <button type="submit" class="qty-btn">+</button>
+                  </form>
+                {% else %}
+                  <form action="{{ url_for('add') }}" method="POST">
+                    <input type="hidden" name="item_id" value="harpic">
+                    <input type="hidden" name="name" value="Harpic (1L)">
+                    <input type="hidden" name="price" value="90">
+                    <input type="hidden" name="image" value="harpic.png">
+                    <input type="hidden" name="category" value="cleaning">
+                    <button type="submit" class="btn add-btn">Add Item</button>
+                  </form>
+                {% endif %}
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

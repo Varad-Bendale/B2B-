@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Snacks - Bazaar One</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='grocery.css') }}" />
+</head>
+<body>
+
+  <div class="dashboard">
+
+    <div class="sidebar">
+      <div class="logo-box">
+        <h2><a href="{{ url_for('shopkeeper_dashboard') }}">Dashboard</a></h2>
+      </div>
+      <ul class="menu">
+        <li><a href="{{ url_for('category', name='grocery') }}">Grocery</a></li>
+        <li><a href="{{ url_for('category', name='beverages') }}">Beverages</a></li>
+        <li><a href="{{ url_for('category', name='dairy') }}">Dairy</a></li>
+        <li><a href="{{ url_for('category', name='vegetables') }}">Vegetables</a></li>
+        <li class="active"><a href="{{ url_for('category', name='snacks') }}">Snacks</a></li>
+        <li><a href="{{ url_for('category', name='cleaning') }}">Cleaning</a></li>
+      </ul>
+    </div>
+
+    <div class="main-content">
+      <div class="topbar">
+        <div class="search-box">
+          🔍 <input type="text" placeholder="Search for products" />
+        </div>
+        <div class="top-icons">
+          <a href="{{ url_for('view_cart') }}">🛒 <span>{{ cart_count }}</span></a>
+          <div class="profile"></div>
+        </div>
+      </div>
+
+      <div class="content-wrapper">
+        <div class="category-section">
+          <h2>Snacks</h2>
+          <div class="category-grid">
+
+            <div class="category-card">
+              <img src="{{ url_for('static', filename='coffee.jpg') }}" alt="Coffee">
+              <h3>Coffee</h3>
+              <h4>Rs 110/-</h4>
+              <div class="action-area">
+                {% if 'coffee' in cart %}
+                  <form action="{{ url_for('update') }}" method="POST" style="display:inline">
+                    <input type="hidden" name="item_id" value="coffee">
+                    <input type="hidden" name="action" value="decrease">
+                    <input type="hidden" name="category" value="snacks">
+                    <button type="submit" class="qty-btn">−</button>
+                  </form>
+                  <span class="qty">{{ cart['coffee']['qty'] }}</span>
+                  <form action="{{ url_for('update') }}" method="POST" style="display:inline">
+                    <input type="hidden" name="item_id" value="coffee">
+                    <input type="hidden" name="action" value="increase">
+                    <input type="hidden" name="category" value="snacks">
+                    <button type="submit" class="qty-btn">+</button>
+                  </form>
+                {% else %}
+                  <form action="{{ url_for('add') }}" method="POST">
+                    <input type="hidden" name="item_id" value="coffee">
+                    <input type="hidden" name="name" value="Coffee">
+                    <input type="hidden" name="price" value="110">
+                    <input type="hidden" name="image" value="coffee.jpg">
+                    <input type="hidden" name="category" value="snacks">
+                    <button type="submit" class="btn add-btn">Add Item</button>
+                  </form>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="category-card">
+              <img src="{{ url_for('static', filename='lays.png') }}" alt="Lays">
+              <h3>Lays</h3>
+              <h4>Rs 20/-</h4>
+              <div class="action-area">
+                {% if 'lays' in cart %}
+                  <form action="{{ url_for('update') }}" method="POST" style="display:inline">
+                    <input type="hidden" name="item_id" value="lays">
+                    <input type="hidden" name="action" value="decrease">
+                    <input type="hidden" name="category" value="snacks">
+                    <button type="submit" class="qty-btn">−</button>
+                  </form>
+                  <span class="qty">{{ cart['lays']['qty'] }}</span>
+                  <form action="{{ url_for('update') }}" method="POST" style="display:inline">
+                    <input type="hidden" name="item_id" value="lays">
+                    <input type="hidden" name="action" value="increase">
+                    <input type="hidden" name="category" value="snacks">
+                    <button type="submit" class="qty-btn">+</button>
+                  </form>
+                {% else %}
+                  <form action="{{ url_for('add') }}" method="POST">
+                    <input type="hidden" name="item_id" value="lays">
+                    <input type="hidden" name="name" value="Lays">
+                    <input type="hidden" name="price" value="20">
+                    <input type="hidden" name="image" value="lays.png">
+                    <input type="hidden" name="category" value="snacks">
+                    <button type="submit" class="btn add-btn">Add Item</button>
+                  </form>
+                {% endif %}
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

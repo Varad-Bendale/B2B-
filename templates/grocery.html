@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grocify</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='grocery.css') }}" />
+</head>
+<body>
+
+<div class="dashboard">
+
+  <div class="sidebar">
+     <div class="logo-box">
+        <h2><a href="{{ url_for('shopkeeper_dashboard') }}">Dashboard</a></h2>
+      </div>
+    <ul class="menu">
+      <li class="active"><a href="{{ url_for('category', name='grocery') }}">Grocery</a></li>
+      <li><a href="{{ url_for('category', name='beverages') }}">Beverages</a></li>
+      <li><a href="{{ url_for('category', name='dairy') }}">Dairy</a></li>
+      <li><a href="{{ url_for('category', name='vegetables') }}">Vegetables</a></li>
+      <li><a href="{{ url_for('category', name='snacks') }}">Snacks</a></li>
+      <li><a href="{{ url_for('category', name='cleaning') }}">Cleaning</a></li>
+    </ul>
+  </div>
+
+  <div class="main-content">
+
+    <div class="topbar">
+      <div class="search-box">🔍 <input type="text" placeholder="Search for products"/></div>
+      <a href="{{ url_for('view_cart') }}">🛒 {{ cart_count }}</a>
+    </div>
+
+    <div class="content-wrapper">
+      <h2>Grocery</h2>
+      <div class="category-grid">
+
+        <!-- ATTA -->
+        <div class="category-card">
+          <img src="{{ url_for('static', filename='atta.jpg') }}" alt="Atta">
+          <h3>Atta (1kg)</h3>
+          <h4>Rs 120/-</h4>
+          <div class="action-area">
+
+            {% if "atta" in cart %}
+              <div class="quantity-box">
+
+                <!-- − button → POST to /cart/update -->
+                <form action="{{ url_for('update') }}" method="POST" style="display:inline">
+                  <input type="hidden" name="item_id"  value="atta">
+                  <input type="hidden" name="action"   value="decrease">
+                  <input type="hidden" name="category" value="grocery">
+                  <button type="submit">−</button>
+                </form>
+
+                <span>{{ cart["atta"].qty }}</span>
+
+                <!-- + button → POST to /cart/update -->
+                <form action="{{ url_for('update') }}" method="POST" style="display:inline">
+                  <input type="hidden" name="item_id"  value="atta">
+                  <input type="hidden" name="action"   value="increase">
+                  <input type="hidden" name="category" value="grocery">
+                  <button type="submit">+</button>
+                </form>
+
+              </div>
+            {% else %}
+              <!-- Add Item → POST to /cart/add, Flask writes a new row in CSV -->
+              <form action="{{ url_for('add') }}" method="POST">
+                <input type="hidden" name="item_id"  value="atta">
+                <input type="hidden" name="name"     value="Atta (1kg)">
+                <input type="hidden" name="price"    value="120">
+                <input type="hidden" name="image"    value="atta.jpg">
+                <input type="hidden" name="category" value="grocery">
+                <button class="btn add-btn" type="submit">Add Item</button>
+              </form>
+            {% endif %}
+
+          </div>
+        </div>
+
+        <!-- DAL -->
+        <div class="category-card">
+          <img src="{{ url_for('static', filename='dal.jpg') }}" alt="Dal">
+          <h3>Dal</h3>
+          <h4>Rs 100/-</h4>
+          <div class="action-area">
+
+            {% if "dal" in cart %}
+              <div class="quantity-box">
+
+                <form action="{{ url_for('update') }}" method="POST" style="display:inline">
+                  <input type="hidden" name="item_id"  value="dal">
+                  <input type="hidden" name="action"   value="decrease">
+                  <input type="hidden" name="category" value="grocery">
+                  <button type="submit">−</button>
+                </form>
+
+                <span>{{ cart["dal"].qty }}</span>
+
+                <form action="{{ url_for('update') }}" method="POST" style="display:inline">
+                  <input type="hidden" name="item_id"  value="dal">
+                  <input type="hidden" name="action"   value="increase">
+                  <input type="hidden" name="category" value="grocery">
+                  <button type="submit">+</button>
+                </form>
+
+              </div>
+            {% else %}
+              <form action="{{ url_for('add') }}" method="POST">
+                <input type="hidden" name="item_id"  value="dal">
+                <input type="hidden" name="name"     value="Dal">
+                <input type="hidden" name="price"    value="100">
+                <input type="hidden" name="image"    value="dal.jpg">
+                <input type="hidden" name="category" value="grocery">
+                <button class="btn add-btn" type="submit">Add Item</button>
+              </form>
+            {% endif %}
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

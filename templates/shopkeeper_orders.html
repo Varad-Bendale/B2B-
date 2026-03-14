@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>{{ shopkeeper_name }}'s Orders</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='shopkeeper_orders.css') }}"/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="dashboard">
+  <div class="sidebar">
+    <div class="logo-box"><h2>Bazaar One</h2></div>
+    <ul class="menu">
+      <li><a href="{{ url_for('wholesaler_dashboard') }}">🏠 Dashboard</a></li>
+      <li><a href="{{ url_for('incoming_orders') }}">📥 Incoming Orders</a></li>
+      <li><a href="{{ url_for('completed_orders') }}">✅ Completed Orders</a></li>
+      <li><a href="{{ url_for('chat') }}">💬 Chat</a></li>
+    </ul>
+  </div>
+  <div class="main-content">
+    <div class="topbar">
+      <div class="search-box">🔍 <input type="text" placeholder="Search orders"/></div>
+    </div>
+    <div class="content-wrapper">
+      <a href="{{ url_for('wholesaler_dashboard') }}" class="btn-back">← Back</a>
+      <h2>Orders by {{ shopkeeper_name }}</h2>
+      <table class="orders-table">
+        <thead>
+          <tr><th>ID</th><th>Item</th><th>Price</th><th>Qty</th><th>Date</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          {% for o in orders %}
+          <tr>
+            <td>{{ o.id }}</td>
+            <td>{{ o.name }}</td>
+            <td>₹{{ o.price }}</td>
+            <td>{{ o.qty }}</td>
+            <td>{{ o.date }}</td>
+            <td><span class="badge {{ o.status }}">{{ o.status }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</body>
+</html>
