@@ -2,6 +2,11 @@ from flask import Flask, render_template, request, redirect, url_for
 import pandas as pd
 import os, csv
 from datetime import date
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import io, base64
+
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
@@ -218,10 +223,23 @@ def completed_orders():
     orders = read_orders()
     if orders.empty or 'status' not in orders.columns:
         completed = []
+        chart     = None
     else:
         completed = orders[orders['status'] == 'completed'].to_dict(orient='records')
-    return render_template('completed.html', orders=completed)
+        done      = orders[orders['status'] == 'completed']
+        item_data = done.groupby('name')['qty'].sum()
 
+        fig, ax = plt.subplots()
+        ax.pie(item_data.values, labels=item_data.index, autopct=lambda p: f'{int(round(p * sum(item_data.values) / 100))}')
+        ax.set_title('Items Sold')
+
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png')
+        buf.seek(0)
+        chart = base64.b64encode(buf.read()).decode('utf-8')
+        plt.close()
+
+    return render_template('completed.html', orders=completed, chart=chart)
 
 @app.route('/wholesaler/complete-order', methods=['POST'])
 def complete_order():
