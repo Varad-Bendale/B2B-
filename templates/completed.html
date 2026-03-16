@@ -13,7 +13,7 @@
     <ul class="menu">
       <li><a href="{{ url_for('wholesaler_dashboard') }}">🏠 Dashboard</a></li>
       <li><a href="{{ url_for('incoming_orders') }}">📥 Incoming Orders</a></li>
-      <li><a href="{{ url_for('completed_orders') }}">✅ Completed Orders</a></li>
+      <li class="active"><a href="{{ url_for('completed_orders') }}">✅ Completed Orders</a></li>
       <li><a href="{{ url_for('chat') }}">💬 Chat</a></li>
     </ul>
   </div>
@@ -23,6 +23,7 @@
     </div>
     <div class="content-wrapper">
       <h2>Completed Orders</h2>
+
       {% if orders %}
       <table class="orders-table">
         <thead>
@@ -36,16 +37,27 @@
             <td>₹{{ o.price }}</td>
             <td>{{ o.qty }}</td>
             <td>
-              <a href="{{ url_for('shopkeeper_orders', name=o.shopkeeper_name) }}">{{ o.shopkeeper_name }}</a>
+              <form action="{{ url_for('shopkeeper_orders') }}" method="POST">
+                <input type="hidden" name="name" value="{{ o.shopkeeper_name }}">
+                <button type="submit" class="btn-link">{{ o.shopkeeper_name }}</button>
+              </form>
             </td>
             <td>{{ o.date }}</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
+       
+      {% if chart %}
+      <div style="text-align:center; margin-top:40px;">
+        <img src="data:image/png;base64,{{ chart }}" alt="Pie Chart"/>
+      </div>
+      {% endif %}
+
       {% else %}
       <p class="empty-msg">No completed orders yet.</p>
       {% endif %}
+
     </div>
   </div>
 </div>
