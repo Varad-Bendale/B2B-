@@ -1,12 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 import pandas as pd
-import os, csv
+import os, csv, io, base64
 from datetime import date
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-import io, base64
-
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
@@ -14,6 +12,7 @@ app.secret_key = "supersecretkey"
 USERS_CSV  = 'users.csv'
 CART_CSV   = 'cart.csv'
 ORDERS_CSV = 'orders.csv'
+CHAT_CSV   = 'chat.csv'
 
 
 def init_db():
@@ -21,38 +20,170 @@ def init_db():
         pd.DataFrame(columns=['role', 'name', 'email', 'mobile', 'address', 'password'])\
           .to_csv(USERS_CSV, index=False)
     if not os.path.exists(ORDERS_CSV):
-        pd.DataFrame(columns=['id', 'name', 'price', 'image', 'qty', 'shopkeeper_name', 'date', 'status'])\
+        pd.DataFrame(columns=['id', 'name', 'price', 'image', 'qty',
+                               'shopkeeper_email', 'shopkeeper_name',
+                               'wholesaler_email', 'date', 'status'])\
           .to_csv(ORDERS_CSV, index=False)
+    if not os.path.exists(CHAT_CSV):
+        # chat_key = shopkeeper_email + "|" + wholesaler_email  (unique per pair)
+        pd.DataFrame(columns=['timestamp', 'sender_role', 'sender_name',
+                               'shopkeeper_email', 'wholesaler_email', 'message'])\
+          .to_csv(CHAT_CSV, index=False)
 
 init_db()
 
+
+# ── Cart helpers ──────────────────────────────────────────────────────────────
 
 def read_cart():
     if not os.path.exists(CART_CSV):
         return {}
     with open(CART_CSV, newline="") as f:
-        return {r["id"]: {**r, "price": int(r["price"]), "qty": int(r["qty"])}
-                for r in csv.DictReader(f)}
+        reader = csv.DictReader(f)
+        result = {}
+        for r in reader:
+            result[r["id"]] = {
+                "id":               r.get("id", ""),
+                "name":             r.get("name", ""),
+                "price":            int(r.get("price", 0)),
+                "image":            r.get("image", ""),
+                "qty":              int(r.get("qty", 1)),
+                "shopkeeper_email": r.get("shopkeeper_email", ""),
+                "shopkeeper_name":  r.get("shopkeeper_name", ""),
+                "wholesaler_email": r.get("wholesaler_email", ""),
+                "date":             r.get("date", ""),
+            }
+        return result
 
 
 def write_cart(cart):
     with open(CART_CSV, "w", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=["id", "name", "price", "image", "qty", "shopkeeper_name", "date"])
+        w = csv.DictWriter(f, fieldnames=[
+            "id", "name", "price", "image", "qty",
+            "shopkeeper_email", "shopkeeper_name", "wholesaler_email", "date"
+        ])
         w.writeheader()
         for item in cart.values():
-            item['shopkeeper_name'] = current_shopkeeper['name']
-            item['date'] = date.today()
+            item['shopkeeper_email'] = session.get('shopkeeper_email', '')
+            item['shopkeeper_name']  = session.get('shopkeeper_name', '')
+            item['wholesaler_email'] = session.get('wholesaler_email', '')
+            item['date'] = str(date.today())
             w.writerow(item)
 
 
 def read_orders():
     if not os.path.exists(ORDERS_CSV):
-        return pd.DataFrame(columns=['id', 'name', 'price', 'image', 'qty', 'shopkeeper_name', 'date', 'status'])
-    return pd.read_csv(ORDERS_CSV)
+        return pd.DataFrame(columns=[
+            'id', 'name', 'price', 'image', 'qty',
+            'shopkeeper_email', 'shopkeeper_name',
+            'wholesaler_email', 'date', 'status'
+        ])
+    df = pd.read_csv(ORDERS_CSV)
+    for col in ['shopkeeper_email', 'shopkeeper_name', 'wholesaler_email']:
+        if col not in df.columns:
+            df[col] = ''
+    return df
 
 
-current_shopkeeper = {}
+# ── Chat helpers ──────────────────────────────────────────────────────────────
 
+def read_messages(shopkeeper_email, wholesaler_email):
+    """Return last 100 messages between this specific shopkeeper-wholesaler pair."""
+    if not os.path.exists(CHAT_CSV):
+        return []
+    df = pd.read_csv(CHAT_CSV)
+    if df.empty:
+        return []
+    mask = (
+        (df['shopkeeper_email'].astype(str).str.strip() == shopkeeper_email.strip()) &
+        (df['wholesaler_email'].astype(str).str.strip() == wholesaler_email.strip())
+    )
+    return df[mask].tail(100).to_dict(orient='records')
+
+
+def write_message(sender_role, sender_name, shopkeeper_email, wholesaler_email, message):
+    from datetime import datetime
+    row = {
+        'timestamp':        datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        'sender_role':      sender_role,
+        'sender_name':      sender_name,
+        'shopkeeper_email': shopkeeper_email,
+        'wholesaler_email': wholesaler_email,
+        'message':          message.strip()
+    }
+    if os.path.exists(CHAT_CSV):
+        df = pd.read_csv(CHAT_CSV)
+        for col in ['shopkeeper_email', 'wholesaler_email']:
+            if col not in df.columns:
+                df[col] = ''
+    else:
+        df = pd.DataFrame(columns=[
+            'timestamp', 'sender_role', 'sender_name',
+            'shopkeeper_email', 'wholesaler_email', 'message'
+        ])
+    df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
+    df.to_csv(CHAT_CSV, index=False)
+
+
+def get_name_from_email(email):
+    """Look up display name from users.csv by email."""
+    df = pd.read_csv(USERS_CSV)
+    user = df[df['email'].astype(str).str.strip() == email.strip()]
+    return user.iloc[0]['name'] if not user.empty else email
+
+
+def get_wholesalers_for_shopkeeper(shopkeeper_email):
+    """Return list of wholesalers this shopkeeper has placed orders with."""
+    orders = read_orders()
+    if orders.empty:
+        return []
+    filtered = orders[orders['shopkeeper_email'].astype(str).str.strip() == shopkeeper_email.strip()]
+    result = {}
+    for _, row in filtered.iterrows():
+        we = str(row.get('wholesaler_email', '')).strip()
+        if we:
+            result[we] = get_name_from_email(we)
+    return [{'email': e, 'name': n} for e, n in sorted(result.items(), key=lambda x: x[1])]
+
+
+def get_shopkeepers_for_wholesaler(wholesaler_email):
+    """Return list of shopkeepers who have ordered from this wholesaler."""
+    orders = read_orders()
+    if orders.empty:
+        return []
+    filtered = orders[orders['wholesaler_email'].astype(str).str.strip() == wholesaler_email.strip()]
+    result = {}
+    for _, row in filtered.iterrows():
+        se = str(row.get('shopkeeper_email', '')).strip()
+        sn = str(row.get('shopkeeper_name', '')).strip()
+        if se:
+            result[se] = sn if sn else get_name_from_email(se)
+    return [{'email': e, 'name': n} for e, n in sorted(result.items(), key=lambda x: x[1])]
+
+
+# ── Auth decorators ───────────────────────────────────────────────────────────
+
+def shopkeeper_required(f):
+    from functools import wraps
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not session.get('shopkeeper_logged_in'):
+            return redirect(url_for('shopkeeper_login'))
+        return f(*args, **kwargs)
+    return decorated
+
+
+def wholesaler_required(f):
+    from functools import wraps
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not session.get('wholesaler_logged_in'):
+            return redirect(url_for('wholesaler_login'))
+        return f(*args, **kwargs)
+    return decorated
+
+
+# ── Auth routes ───────────────────────────────────────────────────────────────
 
 @app.route('/')
 def index():
@@ -84,7 +215,6 @@ def register():
 
 @app.route('/login-shopkeeper', methods=['GET', 'POST'])
 def shopkeeper_login():
-    global current_shopkeeper
     if request.method == 'POST':
         email    = request.form.get('email').strip().lower()
         password = request.form.get('password').strip()
@@ -95,7 +225,10 @@ def shopkeeper_login():
             (df['role'].astype(str).str.strip() == 'shopkeeper')
         ]
         if not user.empty:
-            current_shopkeeper = user.iloc[0].to_dict()
+            row = user.iloc[0].to_dict()
+            session['shopkeeper_logged_in'] = True
+            session['shopkeeper_name']      = row['name']
+            session['shopkeeper_email']     = row['email']
             return redirect(url_for('shopkeeper_dashboard'))
         return "Invalid Shopkeeper Login!"
     return render_template('shopkeeper-login.html')
@@ -113,22 +246,37 @@ def wholesaler_login():
             (df['role'].astype(str).str.strip() == 'wholesaler')
         ]
         if not user.empty:
+            row = user.iloc[0].to_dict()
+            session['wholesaler_logged_in'] = True
+            session['wholesaler_name']      = row['name']
+            session['wholesaler_email']     = row['email']
             return redirect(url_for('wholesaler_dashboard'))
         return "Invalid Wholesaler Login!"
     return render_template('wholesaler-login.html')
 
 
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('index'))
+
+
+# ── Shopkeeper routes ─────────────────────────────────────────────────────────
+
 @app.route('/shopkeeper-dashboard')
+@shopkeeper_required
 def shopkeeper_dashboard():
     return render_template('dashboard.html')
 
 
 @app.route('/category/<name>')
+@shopkeeper_required
 def category(name):
     return render_template(f'{name}.html')
 
 
 @app.route('/cart')
+@shopkeeper_required
 def view_cart():
     cart_dict = read_cart()
     cart      = list(cart_dict.values())
@@ -138,13 +286,23 @@ def view_cart():
 
 
 @app.route('/cart/add', methods=['POST'])
+@shopkeeper_required
 def add():
     f       = request.form
     cart    = read_cart()
     item_id = f["item_id"]
     if item_id not in cart:
-        cart[item_id] = {"id": item_id, "name": f["name"],
-                         "price": int(f["price"]), "image": f["image"], "qty": 1}
+        cart[item_id] = {
+            "id":               item_id,
+            "name":             f["name"],
+            "price":            int(f["price"]),
+            "image":            f["image"],
+            "qty":              1,
+            "shopkeeper_email": session.get('shopkeeper_email', ''),
+            "shopkeeper_name":  session.get('shopkeeper_name', ''),
+            "wholesaler_email": session.get('wholesaler_email', ''),
+            "date":             str(date.today())
+        }
     else:
         cart[item_id]["qty"] += 1
     write_cart(cart)
@@ -152,6 +310,7 @@ def add():
 
 
 @app.route('/cart/update', methods=['POST'])
+@shopkeeper_required
 def update():
     f       = request.form
     cart    = read_cart()
@@ -167,6 +326,7 @@ def update():
 
 
 @app.route('/cart/remove', methods=['POST'])
+@shopkeeper_required
 def remove():
     cart = read_cart()
     cart.pop(request.form["item_id"], None)
@@ -174,31 +334,64 @@ def remove():
     return redirect(url_for('view_cart'))
 
 
-@app.route('/wholesaler-dashboard')
-def wholesaler_dashboard():
-    orders = read_orders()
+@app.route('/cart/checkout', methods=['POST'])
+@shopkeeper_required
+def checkout():
+    cart = read_cart()
+    if not cart:
+        return redirect(url_for('view_cart'))
+
+    orders       = read_orders()
+    existing_ids = set(orders['id'].astype(str).values) if not orders.empty else set()
+
+    new_rows = []
+    for item in cart.values():
+        if str(item['id']) not in existing_ids:
+            new_rows.append({
+                'id':               item['id'],
+                'name':             item['name'],
+                'price':            item['price'],
+                'image':            item['image'],
+                'qty':              item['qty'],
+                'shopkeeper_email': session.get('shopkeeper_email', ''),
+                'shopkeeper_name':  session.get('shopkeeper_name', ''),
+                'wholesaler_email': session.get('wholesaler_email', ''),
+                'date':             str(date.today()),
+                'status':           'incoming',
+            })
+
+    if new_rows:
+        orders = pd.concat([orders, pd.DataFrame(new_rows)], ignore_index=True)
+        orders.to_csv(ORDERS_CSV, index=False)
+
     if os.path.exists(CART_CSV):
-        cart = pd.read_csv(CART_CSV)
-        if not cart.empty:
-            cart['status'] = 'incoming'
-            if not orders.empty:
-                already_added = orders['id'].astype(str).values
-                cart = cart[~cart['id'].astype(str).isin(already_added)]
-            if not cart.empty:
-                orders = pd.concat([orders, cart], ignore_index=True)
-                orders.to_csv(ORDERS_CSV, index=False)
+        os.remove(CART_CSV)
+
+    return redirect(url_for('shopkeeper_dashboard'))
+
+
+# ── Wholesaler routes ─────────────────────────────────────────────────────────
+
+@app.route('/wholesaler-dashboard')
+@wholesaler_required
+def wholesaler_dashboard():
+    wholesaler_email = session.get('wholesaler_email', '')
+    orders = read_orders()
+    orders = orders[orders['wholesaler_email'].astype(str).str.strip() == wholesaler_email] \
+             if not orders.empty else orders
 
     total_orders      = len(orders)
-    total_shopkeepers = orders['shopkeeper_name'].nunique() if not orders.empty else 0
+    total_shopkeepers = orders['shopkeeper_email'].nunique() if not orders.empty else 0
     completed_count   = len(orders[orders['status'] == 'completed']) if not orders.empty else 0
 
     shopkeepers = []
     if not orders.empty:
-        for name, group in orders.groupby('shopkeeper_name'):
+        for email, group in orders.groupby('shopkeeper_email'):
             shopkeepers.append({
-                'shopkeeper_name': name,
-                'order_count':     len(group),
-                'last_date':       group['date'].max()
+                'shopkeeper_name':  group['shopkeeper_name'].iloc[0],
+                'shopkeeper_email': email,
+                'order_count':      len(group),
+                'last_date':        group['date'].max()
             })
 
     return render_template('wholesaler.html',
@@ -209,39 +402,53 @@ def wholesaler_dashboard():
 
 
 @app.route('/wholesaler/incoming')
+@wholesaler_required
 def incoming_orders():
+    wholesaler_email = session.get('wholesaler_email', '')
     orders = read_orders()
     if orders.empty or 'status' not in orders.columns:
         incoming = []
     else:
-        incoming = orders[orders['status'] == 'incoming'].to_dict(orient='records')
+        incoming = orders[
+            (orders['status'] == 'incoming') &
+            (orders['wholesaler_email'].astype(str).str.strip() == wholesaler_email)
+        ].to_dict(orient='records')
     return render_template('incoming.html', orders=incoming)
 
 
 @app.route('/wholesaler/completed')
+@wholesaler_required
 def completed_orders():
+    wholesaler_email = session.get('wholesaler_email', '')
     orders = read_orders()
+    chart  = None
     if orders.empty or 'status' not in orders.columns:
         completed = []
-        chart     = None
     else:
-        completed = orders[orders['status'] == 'completed'].to_dict(orient='records')
-        done      = orders[orders['status'] == 'completed']
-        item_data = done.groupby('name')['qty'].sum()
+        completed_df = orders[
+            (orders['status'] == 'completed') &
+            (orders['wholesaler_email'].astype(str).str.strip() == wholesaler_email)
+        ]
+        completed = completed_df.to_dict(orient='records')
 
-        fig, ax = plt.subplots()
-        ax.pie(item_data.values, labels=item_data.index, autopct=lambda p: f'{int(round(p * sum(item_data.values) / 100))}')
-        ax.set_title('Items Sold')
-
-        buf = io.BytesIO()
-        plt.savefig(buf, format='png')
-        buf.seek(0)
-        chart = base64.b64encode(buf.read()).decode('utf-8')
-        plt.close()
+        if not completed_df.empty and 'name' in completed_df.columns:
+            completed_df['qty'] = pd.to_numeric(completed_df['qty'], errors='coerce').fillna(1)
+            counts = completed_df.groupby('name')['qty'].sum().sort_values(ascending=False)
+            fig, ax = plt.subplots(figsize=(8, 8))
+            ax.pie(counts.values, labels=counts.index, autopct='%1.1f%%',
+                   startangle=140, pctdistance=0.82)
+            ax.set_title('Completed Orders — Units Dispatched per Product', fontsize=13, pad=20)
+            buf = io.BytesIO()
+            plt.savefig(buf, format='png', bbox_inches='tight')
+            buf.seek(0)
+            chart = base64.b64encode(buf.read()).decode('utf-8')
+            plt.close(fig)
 
     return render_template('completed.html', orders=completed, chart=chart)
 
+
 @app.route('/wholesaler/complete-order', methods=['POST'])
+@wholesaler_required
 def complete_order():
     order_id   = request.form.get('order_id')
     new_status = request.form.get('new_status')
@@ -252,19 +459,95 @@ def complete_order():
 
 
 @app.route('/wholesaler/shopkeeper', methods=['POST'])
+@wholesaler_required
 def shopkeeper_orders():
-    name   = request.form.get('name')
+    email  = request.form.get('email', '')
+    name   = request.form.get('name', email)
     orders = read_orders()
     if orders.empty:
         result = []
     else:
-        result = orders[orders['shopkeeper_name'] == name].to_dict(orient='records')
+        result = orders[orders['shopkeeper_email'].astype(str) == email].to_dict(orient='records')
     return render_template('shopkeeper_orders.html', shopkeeper_name=name, orders=result)
 
 
+# ── Wholesaler chat ───────────────────────────────────────────────────────────
+
 @app.route('/wholesaler/chat')
-def chat():
-    return render_template('chat.html')
+@wholesaler_required
+def wholesaler_chat():
+    wholesaler_email = session.get('wholesaler_email', '')
+    shopkeepers = get_shopkeepers_for_wholesaler(wholesaler_email)
+    return render_template('wholesaler_chat_list.html', shopkeepers=shopkeepers)
+
+
+@app.route('/wholesaler/chat/<path:shopkeeper_email>')
+@wholesaler_required
+def wholesaler_chat_room(shopkeeper_email):
+    wholesaler_email = session.get('wholesaler_email', '')
+    sk_name          = get_name_from_email(shopkeeper_email)
+    messages         = read_messages(shopkeeper_email, wholesaler_email)
+    return render_template('chat.html',
+                           role='wholesaler',
+                           sender_name=session.get('wholesaler_name', 'Wholesaler'),
+                           shopkeeper_email=shopkeeper_email,
+                           wholesaler_email=wholesaler_email,
+                           shopkeeper_name=sk_name,
+                           room_title=f'Chat with {sk_name}',
+                           messages=messages,
+                           send_url=url_for('wholesaler_chat_send', shopkeeper_email=shopkeeper_email),
+                           back_url=url_for('wholesaler_chat'))
+
+
+@app.route('/wholesaler/chat/<path:shopkeeper_email>/send', methods=['POST'])
+@wholesaler_required
+def wholesaler_chat_send(shopkeeper_email):
+    wholesaler_email = session.get('wholesaler_email', '')
+    wholesaler_name  = session.get('wholesaler_name', 'Wholesaler')
+    msg = request.form.get('message', '').strip()
+    if msg:
+        write_message('wholesaler', wholesaler_name, shopkeeper_email, wholesaler_email, msg)
+    return redirect(url_for('wholesaler_chat_room', shopkeeper_email=shopkeeper_email))
+
+
+# ── Shopkeeper chat ───────────────────────────────────────────────────────────
+
+@app.route('/shopkeeper/chat')
+@shopkeeper_required
+def shopkeeper_chat():
+    sk_email    = session.get('shopkeeper_email', '')
+    wholesalers = get_wholesalers_for_shopkeeper(sk_email)
+    return render_template('shopkeeper_chat_list.html', wholesalers=wholesalers)
+
+
+@app.route('/shopkeeper/chat/<path:wholesaler_email>')
+@shopkeeper_required
+def shopkeeper_chat_room(wholesaler_email):
+    sk_email = session.get('shopkeeper_email', '')
+    sk_name  = session.get('shopkeeper_name', 'Shopkeeper')
+    w_name   = get_name_from_email(wholesaler_email)
+    messages = read_messages(sk_email, wholesaler_email)
+    return render_template('chat.html',
+                           role='shopkeeper',
+                           sender_name=sk_name,
+                           shopkeeper_email=sk_email,
+                           wholesaler_email=wholesaler_email,
+                           shopkeeper_name=sk_name,
+                           room_title=f'Chat with {w_name}',
+                           messages=messages,
+                           send_url=url_for('shopkeeper_chat_send', wholesaler_email=wholesaler_email),
+                           back_url=url_for('shopkeeper_chat'))
+
+
+@app.route('/shopkeeper/chat/<path:wholesaler_email>/send', methods=['POST'])
+@shopkeeper_required
+def shopkeeper_chat_send(wholesaler_email):
+    sk_email = session.get('shopkeeper_email', '')
+    sk_name  = session.get('shopkeeper_name', 'Shopkeeper')
+    msg      = request.form.get('message', '').strip()
+    if msg:
+        write_message('shopkeeper', sk_name, sk_email, wholesaler_email, msg)
+    return redirect(url_for('shopkeeper_chat_room', wholesaler_email=wholesaler_email))
 
 
 if __name__ == '__main__':
