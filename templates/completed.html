@@ -14,20 +14,28 @@
       <li><a href="{{ url_for('wholesaler_dashboard') }}">🏠 Dashboard</a></li>
       <li><a href="{{ url_for('incoming_orders') }}">📥 Incoming Orders</a></li>
       <li class="active"><a href="{{ url_for('completed_orders') }}">✅ Completed Orders</a></li>
-      <li><a href="{{ url_for('chat') }}">💬 Chat</a></li>
+      <li><a href="{{ url_for('wholesaler_chat') }}">💬 Chat</a></li>
     </ul>
   </div>
   <div class="main-content">
     <div class="topbar">
-      <div class="search-box">🔍 <input type="text" placeholder="Search orders"/></div>
+      <div class="search-box">
+        🔍 <input type="text" id="searchInput" placeholder="Search orders" oninput="filterOrders(this.value)"/>
+      </div>
     </div>
     <div class="content-wrapper">
       <h2>Completed Orders</h2>
-
       {% if orders %}
-      <table class="orders-table">
+      <table class="orders-table" id="ordersTable">
         <thead>
-          <tr><th>ID</th><th>Item</th><th>Price</th><th>Qty</th><th>Shopkeeper</th><th>Date</th></tr>
+          <tr>
+            <th>ID</th>
+            <th>Item</th>
+            <th>Price</th>
+            <th>Qty</th>
+            <th>Shopkeeper</th>
+            <th>Date</th>
+          </tr>
         </thead>
         <tbody>
           {% for o in orders %}
@@ -47,19 +55,28 @@
           {% endfor %}
         </tbody>
       </table>
-       
+
       {% if chart %}
       <div style="text-align:center; margin-top:40px;">
-        <img src="data:image/png;base64,{{ chart }}" alt="Pie Chart"/>
+        <img src="data:image/png;base64,{{ chart }}" alt="Orders Pie Chart"/>
       </div>
       {% endif %}
 
       {% else %}
       <p class="empty-msg">No completed orders yet.</p>
       {% endif %}
-
     </div>
   </div>
 </div>
+
+<script>
+  function filterOrders(query) {
+    const rows = document.querySelectorAll('#ordersTable tbody tr');
+    const q = query.toLowerCase();
+    rows.forEach(row => {
+      row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+  }
+</script>
 </body>
 </html>

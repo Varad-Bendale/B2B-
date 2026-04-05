@@ -53,7 +53,7 @@
                   <button type="submit">−</button>
                 </form>
 
-                <span>{{ cart["atta"].qty }}</span>
+                <span>{{ cart["atta"]["qty"] }}</span>
 
                 <!-- + button → POST to /cart/update -->
                 <form action="{{ url_for('update') }}" method="POST" style="display:inline">
@@ -79,7 +79,6 @@
           </div>
         </div>
 
-        <!-- DAL -->
         <div class="category-card">
           <img src="{{ url_for('static', filename='dal.jpg') }}" alt="Dal">
           <h3>Dal</h3>
@@ -96,7 +95,7 @@
                   <button type="submit">−</button>
                 </form>
 
-                <span>{{ cart["dal"].qty }}</span>
+                <span>{{ cart["dal"]["qty"] }}</span>
 
                 <form action="{{ url_for('update') }}" method="POST" style="display:inline">
                   <input type="hidden" name="item_id"  value="dal">

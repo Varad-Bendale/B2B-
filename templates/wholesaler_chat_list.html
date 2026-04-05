@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Chat — Select Shopkeeper</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='cart.css') }}">
+<style>
+.chat-list-wrapper {
+  max-width: 480px;
+  margin: 60px auto;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+.chat-list-header {
+  background: #4f46e5;
+  color: white;
+  padding: 20px 24px;
+  font-size: 17px;
+  font-weight: 700;
+}
+.chat-list-header p {
+  font-size: 12px;
+  font-weight: 400;
+  opacity: 0.8;
+  margin-top: 4px;
+}
+.shopkeeper-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.shopkeeper-list li a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 24px;
+  text-decoration: none;
+  color: #1e293b;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 0.15s;
+}
+.shopkeeper-list li a:hover { background: #f8fafc; }
+.avatar {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  background: #e0e7ff;
+  color: #4f46e5;
+  font-weight: 700;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.sk-info strong { display: block; font-size: 15px; }
+.sk-info span   { font-size: 12px; color: #94a3b8; }
+.arrow { margin-left: auto; color: #cbd5e1; font-size: 18px; }
+.empty {
+  text-align: center;
+  padding: 40px;
+  color: #94a3b8;
+  font-size: 14px;
+}
+</style>
+</head>
+<body>
+<div class="chat-list-wrapper">
+  <div class="chat-list-header">
+    💬 Messages
+    <p>Select a shopkeeper to open their chat</p>
+  </div>
+  {% if shopkeepers %}
+  <ul class="shopkeeper-list">
+    {% for sk in shopkeepers %}
+    <li>
+      <a href="{{ url_for('wholesaler_chat_room', shopkeeper_email=sk.email) }}">
+        <div class="avatar">{{ sk.name[0].upper() }}</div>
+        <div class="sk-info">
+          <strong>{{ sk.name }}</strong>
+          <span>{{ sk.email }}</span>
+        </div>
+        <span class="arrow">›</span>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <div class="empty">
+    No shopkeepers have placed orders yet.<br>
+    Their names will appear here once they do.
+  </div>
+  {% endif %}
+</div>
+</body>
+</html>
