@@ -1,5 +1,5 @@
-id,name,price,image,qty,shopkeeper_name,date,status
-atta,Atta (1kg),120,atta.jpg,5,Varad Bendale,2026-03-14,completed
-dal,Dal,100,dal.jpg,4,Varad Bendale,2026-03-14,completed
-onion,Onion (1kg),40,onion.jpg,4,Varad Bendale,2026-03-14,incoming
-tomato,Tomato (500g),20,tomato.png,5,Varad Bendale,2026-03-14,incoming
+id,name,price,image,qty,shopkeeper_email,shopkeeper_name,wholesaler_email,date,status
+atta,Atta (1kg),120,atta.jpg,4,varad@gmail.com,Varad Bendale,om@gmail.com,2026-04-05,completed
+dal,Dal,100,dal.jpg,4,varad@gmail.com,Varad Bendale,om@gmail.com,2026-04-05,incoming
+onion,Onion (1kg),40,onion.jpg,2,varad@gmail.com,Varad Bendale,om@gmail.com,2026-04-05,completed
+tomato,Tomato (500g),20,tomato.png,4,varad@gmail.com,Varad Bendale,om@gmail.com,2026-04-05,completed
